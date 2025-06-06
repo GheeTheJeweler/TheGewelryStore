@@ -9,23 +9,22 @@ document.addEventListener('DOMContentLoaded', function() {
     else if (currentFile.includes('/contact/')) currentPage = 'contact';
     console.log('Current page:', currentPage);
       const inSubDir = currentFile.includes('/shop/') || currentFile.includes('/photos/') || currentFile.includes('/contact/');
-    const iconPath = inSubDir ? '../icon.png' : './icon.png';
-      function getNavLink(page) {
+    const iconPath = inSubDir ? '../icon.png' : './icon.png';    function getNavLink(page) {
         if (inSubDir) {
             switch(page) {
-                case 'home': return '../index.html';
-                case 'shop': return '../shop/index.html';
-                case 'photos': return '../photos/index.html';
-                case 'contact': return '../contact/index.html';
-                default: return '../index.html';
+                case 'home': return '../';
+                case 'shop': return '../shop/';
+                case 'photos': return '../photos/';
+                case 'contact': return '../contact/';
+                default: return '../';
             }
         } else {
             switch(page) {
-                case 'home': return './index.html';
-                case 'shop': return './shop/index.html';
-                case 'photos': return './photos/index.html';
-                case 'contact': return './contact/index.html';
-                default: return './index.html';
+                case 'home': return './';
+                case 'shop': return './shop/';
+                case 'photos': return './photos/';
+                case 'contact': return './contact/';
+                default: return './';
             }        
         }
     }
