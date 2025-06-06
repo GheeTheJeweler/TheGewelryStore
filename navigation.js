@@ -10,23 +10,26 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Current page:', currentPage);
       const inSubDir = currentFile.includes('/shop/') || currentFile.includes('/photos/') || currentFile.includes('/contact/');
     const iconPath = inSubDir ? '../icon.png' : './icon.png';    function getNavLink(page) {
+        let url;
         if (inSubDir) {
             switch(page) {
-                case 'home': return '../';
-                case 'shop': return '../shop/';
-                case 'photos': return '../photos/';
-                case 'contact': return '../contact/';
-                default: return '../';
+                case 'home': url = '../'; break;
+                case 'shop': url = '../shop/'; break;
+                case 'photos': url = '../photos/'; break;
+                case 'contact': url = '../contact/'; break;
+                default: url = '../'; break;
             }
         } else {
             switch(page) {
-                case 'home': return './';
-                case 'shop': return './shop/';
-                case 'photos': return './photos/';
-                case 'contact': return './contact/';
-                default: return './';
+                case 'home': url = './'; break;
+                case 'shop': url = './shop/'; break;
+                case 'photos': url = './photos/'; break;
+                case 'contact': url = './contact/'; break;
+                default: url = './'; break;
             }        
         }
+        console.log(`Navigation: ${page} -> ${url}`);
+        return url;
     }
     
     const sidebarNav = `
