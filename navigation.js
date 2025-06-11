@@ -820,12 +820,18 @@ function addSocialMediaFooter() {
     if (document.querySelector('.social-media-footer')) {
         return;
     }
-      const footerHTML = `
+    const footerHTML = `
         <footer class="w3-content w3-padding-64 w3-text-grey w3-xlarge social-media-footer">
-            <i class="fab fa-facebook w3-hover-opacity"></i>
-            <i class="fab fa-instagram w3-hover-opacity"></i>
+            <a href="https://www.facebook.com/people/The-Gewelry-Store/61576767380596/" target="_blank" rel="noopener noreferrer">
+                <i class="fab fa-facebook w3-hover-opacity"></i>
+            </a>
+            <a href="https://www.instagram.com/thegewelrystore/" target="_blank" rel="noopener noreferrer">
+                <i class="fab fa-instagram w3-hover-opacity"></i>
+            </a>
             <i class="fab fa-snapchat w3-hover-opacity"></i>
-            <i class="fab fa-linkedin w3-hover-opacity"></i>
+            <a href="https://www.linkedin.com/in/garrison-mulberry-0a5aa5352/" target="_blank" rel="noopener noreferrer">
+                <i class="fab fa-linkedin w3-hover-opacity"></i>
+            </a>
             <i class="fab fa-tiktok w3-hover-opacity"></i>
         </footer>
     `;
