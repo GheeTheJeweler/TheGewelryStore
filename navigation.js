@@ -820,14 +820,13 @@ function addSocialMediaFooter() {
     if (document.querySelector('.social-media-footer')) {
         return;
     }
-    
-    const footerHTML = `
+      const footerHTML = `
         <footer class="w3-content w3-padding-64 w3-text-grey w3-xlarge social-media-footer">
-            <i class="fa fa-facebook-official w3-hover-opacity"></i>
-            <i class="fa fa-instagram w3-hover-opacity"></i>
-            <i class="fa fa-snapchat w3-hover-opacity"></i>
-            <i class="fa fa-linkedin w3-hover-opacity"></i>
-            <i class="fa fa-tiktok w3-hover-opacity"></i>
+            <i class="fab fa-facebook w3-hover-opacity"></i>
+            <i class="fab fa-instagram w3-hover-opacity"></i>
+            <i class="fab fa-snapchat w3-hover-opacity"></i>
+            <i class="fab fa-linkedin w3-hover-opacity"></i>
+            <i class="fab fa-tiktok w3-hover-opacity"></i>
         </footer>
     `;
     
