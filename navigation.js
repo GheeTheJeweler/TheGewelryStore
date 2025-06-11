@@ -5,10 +5,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (quickCache) {
         const navData = JSON.parse(quickCache);
         if (navData.currentPage === getCurrentPage()) {
-            document.body.insertAdjacentHTML('afterbegin', navData.html);
-            console.log('Navigation loaded instantly from session cache');
+            document.body.insertAdjacentHTML('afterbegin', navData.html);            console.log('Navigation loaded instantly from session cache');
             // Initialize sidebar prices when loading from cache
             initializeSidebarPrices();
+            // Add social media footer
+            addSocialMediaFooter();
             // Continue with full initialization
             initializeAfterCacheLoad();
             return;
@@ -100,9 +101,11 @@ function initializeNavigation() {
     
     // Cache this navigation for instant loading
     cacheNavigationForInstantLoad(currentPage, sidebarNav + mobileNav);
-    
-    // Initialize sidebar metal prices
+      // Initialize sidebar metal prices
     initializeSidebarPrices();
+    
+    // Add social media footer
+    addSocialMediaFooter();
     
     initializeAfterCacheLoad();
 }
@@ -808,5 +811,34 @@ function addTimeBasedMessage() {
     
     if (message) {
         console.log(`%c${message}`, 'color: #ffd700; font-size: 14px; font-weight: bold; text-shadow: 1px 1px 2px #000;');
+    }
+}
+
+// SOCIAL MEDIA FOOTER FUNCTIONS
+function addSocialMediaFooter() {
+    // Check if footer already exists to avoid duplicates
+    if (document.querySelector('.social-media-footer')) {
+        return;
+    }
+    
+    const footerHTML = `
+        <footer class="w3-content w3-padding-64 w3-text-grey w3-xlarge social-media-footer">
+            <i class="fa fa-facebook-official w3-hover-opacity"></i>
+            <i class="fa fa-instagram w3-hover-opacity"></i>
+            <i class="fa fa-snapchat w3-hover-opacity"></i>
+            <i class="fa fa-linkedin w3-hover-opacity"></i>
+            <i class="fa fa-tiktok w3-hover-opacity"></i>
+        </footer>
+    `;
+    
+    // Find the main content div and add footer inside it at the end
+    const mainDiv = document.querySelector('#main');
+    if (mainDiv) {
+        mainDiv.insertAdjacentHTML('beforeend', footerHTML);
+        console.log('Social media footer added automatically');
+    } else {
+        // Fallback: add footer before the closing body tag
+        document.body.insertAdjacentHTML('beforeend', footerHTML);
+        console.log('Social media footer added to body (fallback)');
     }
 }
