@@ -1,0 +1,25 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://gheethejeweler.github.io/TheGewelryStore/sitemap.xml
+
+# Disallow access to temporary or development files
+Disallow: /note.txt
+Disallow: *.tmp
+Disallow: *.bak
+
+# Allow access to CSS and JavaScript files
+Allow: /stylesheet.css
+Allow: /navigation.js
+Allow: *.css
+Allow: *.js
+
+# Allow access to images
+Allow: /images/
+Allow: *.png
+Allow: *.jpg
+Allow: *.jpeg
+Allow: *.gif
+Allow: *.svg
+Allow: *.ico
