@@ -1,13 +1,14 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Navigation script loaded');
-    
-    // Try to load navigation instantly from cache
+      // Try to load navigation instantly from cache
     const quickCache = sessionStorage.getItem('gewelryNavQuick');
     if (quickCache) {
         const navData = JSON.parse(quickCache);
         if (navData.currentPage === getCurrentPage()) {
             document.body.insertAdjacentHTML('afterbegin', navData.html);
             console.log('Navigation loaded instantly from session cache');
+            // Initialize sidebar prices when loading from cache
+            initializeSidebarPrices();
             // Continue with full initialization
             initializeAfterCacheLoad();
             return;
@@ -48,8 +49,7 @@ function initializeNavigation() {
         console.log(`Navigation: ${page} -> ${url}`);
         return url;
     }
-    
-    const sidebarNav = `
+      const sidebarNav = `
         <nav class="w3-sidebar w3-bar-block w3-small w3-hide-small w3-center">
           <img src="${iconPath}" style="width:100%">
           <a href="${getNavLink('home')}" class="w3-bar-item w3-button w3-padding-large ${currentPage === 'home' ? 'nav-active' : 'w3-hover-black'}">
@@ -63,23 +63,46 @@ function initializeNavigation() {
           <a href="${getNavLink('photos')}" class="w3-bar-item w3-button w3-padding-large ${currentPage === 'photos' ? 'nav-active' : 'w3-hover-black'}">
             <i class="fa fa-camera w3-xxlarge"></i>
             <p>PHOTOS</p>
-          </a>
-          <a href="${getNavLink('contact')}" class="w3-bar-item w3-button w3-padding-large ${currentPage === 'contact' ? 'nav-active' : 'w3-hover-black'}">
+          </a>          <a href="${getNavLink('contact')}" class="w3-bar-item w3-button w3-padding-large ${currentPage === 'contact' ? 'nav-active' : 'w3-hover-black'}">
             <i class="fa fa-envelope w3-xxlarge"></i>
             <p>CONTACT</p>
-          </a>        </nav>`;      
+          </a>
+            <!-- Metal Prices Section -->
+          <div class="w3-bar-item" style="border-top: 1px solid #444; margin-top: 8px; padding: 8px 4px;">
+            <div id="sidebarMetalPrices" class="sidebar-metal-prices">
+              <div class="sidebar-prices-title">
+                💰 LIVE PRICES
+              </div>
+              <div class="sidebar-price-row">
+                <span>🥇 Gold:</span>
+                <span id="sidebarGoldPrice">$3,365</span>
+              </div>
+              <div class="sidebar-price-row">
+                <span>🥈 Silver:</span>
+                <span id="sidebarSilverPrice">$36.20</span>
+              </div>
+              <div class="sidebar-price-row">
+                <span>💍 Platinum:</span>
+                <span id="sidebarPlatinumPrice">$1,240</span>
+              </div>
+              <div id="sidebarPriceSource" class="sidebar-price-source">Live API 02:35 PM</div>
+            </div>
+          </div>
+        </nav>`;
     const mobileNav = `
         <div class="w3-top w3-hide-large w3-hide-medium" id="myNavbar">
           <div class="w3-bar w3-black w3-center w3-small">            <a href="${getNavLink('home')}" class="w3-bar-item w3-button ${currentPage === 'home' ? 'nav-active' : ''}" style="width:25% !important">HOME</a>
             <a href="${getNavLink('shop')}" class="w3-bar-item w3-button ${currentPage === 'shop' ? 'nav-active' : ''}" style="width:25% !important">SHOP</a>
             <a href="${getNavLink('photos')}" class="w3-bar-item w3-button ${currentPage === 'photos' ? 'nav-active' : ''}" style="width:25% !important">PHOTOS</a>
             <a href="${getNavLink('contact')}" class="w3-bar-item w3-button ${currentPage === 'contact' ? 'nav-active' : ''}" style="width:25% !important">CONTACT</a>
-          </div>        </div>`;    
-    document.body.insertAdjacentHTML('afterbegin', sidebarNav + mobileNav);    
+          </div>        </div>`;      document.body.insertAdjacentHTML('afterbegin', sidebarNav + mobileNav);    
     console.log('Navigation injected successfully');
     
     // Cache this navigation for instant loading
     cacheNavigationForInstantLoad(currentPage, sidebarNav + mobileNav);
+    
+    // Initialize sidebar metal prices
+    initializeSidebarPrices();
     
     initializeAfterCacheLoad();
 }
@@ -89,6 +112,189 @@ function initializeAfterCacheLoad() {
     initializePerformanceOptimizations();
     
     initializeEasterEggs();
+}
+
+// SIDEBAR METAL PRICES FUNCTIONS
+function initializeSidebarPrices() {
+    console.log('💰 Initializing sidebar metal prices...');
+    
+    // Load prices immediately with fallback values
+    loadSidebarMetalPrices();
+    
+    // Set up periodic updates every 45 minutes
+    setInterval(loadSidebarMetalPrices, 45 * 60 * 1000);
+    
+    // Update when page becomes visible again
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            loadSidebarMetalPrices();
+        }
+    });
+      // Add click functionality to price section
+    // setTimeout(setupPricesSectionClick, 500); // Removed - estimates page not ready
+}
+
+async function loadSidebarMetalPrices() {
+    try {
+        console.log('📊 Loading metal prices for sidebar...');
+        
+        // Try to fetch from the same sources as estimates.js
+        const prices = await fetchMetalPricesFromAPI();
+        
+        if (prices) {
+            updateSidebarPrices(prices, 'Live API');
+        } else {
+            // Use fallback prices
+            const fallbackPrices = {
+                gold: 3350.00,
+                silver: 35.50,
+                platinum: 1020.00
+            };
+            updateSidebarPrices(fallbackPrices, 'Estimated');
+        }
+        
+    } catch (error) {
+        console.log('❌ Sidebar prices failed, using fallback:', error.message);
+        
+        // Use fallback prices
+        const fallbackPrices = {
+            gold: 3350.00,
+            silver: 35.50,
+            platinum: 1020.00
+        };
+        updateSidebarPrices(fallbackPrices, 'Estimated');
+    }
+}
+
+async function fetchMetalPricesFromAPI() {
+    try {
+        const metalSymbols = {
+            'GC=F': 'gold',    // Gold futures
+            'SI=F': 'silver',  // Silver futures
+            'PL=F': 'platinum' // Platinum futures
+        };
+        
+        const corsProxies = [
+            'https://api.allorigins.win/get?url=',
+            'https://corsproxy.io/?',
+            'https://api.codetabs.com/v1/proxy/?quest='
+        ];
+        
+        const prices = { gold: null, silver: null, platinum: null };
+        let successfulProxy = null;
+        
+        // Try each proxy until we find one that works
+        for (const proxyUrl of corsProxies) {
+            try {
+                const testUrl = `${proxyUrl}${encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/chart/GC=F')}`;
+                const testResponse = await fetch(testUrl, { 
+                    method: 'GET',
+                    timeout: 5000 
+                });
+                
+                if (testResponse.ok) {
+                    successfulProxy = proxyUrl;
+                    break;
+                }
+            } catch (e) {
+                continue;
+            }
+        }
+        
+        if (!successfulProxy) {
+            throw new Error('No working proxy found');
+        }
+        
+        // Fetch all metals in parallel
+        const fetchPromises = Object.keys(metalSymbols).map(async symbol => {
+            try {
+                const url = `${successfulProxy}${encodeURIComponent(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`)}`;
+                const response = await fetch(url, { timeout: 5000 });
+                
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                let data;
+                if (successfulProxy.includes('allorigins')) {
+                    const result = await response.json();
+                    data = JSON.parse(result.contents);
+                } else {
+                    data = await response.json();
+                }
+                
+                const price = data?.chart?.result?.[0]?.meta?.regularMarketPrice;
+                if (price && price > 0) {
+                    const metalName = metalSymbols[symbol];
+                    prices[metalName] = parseFloat(price.toFixed(2));
+                    return true;
+                }
+                return false;
+            } catch (e) {
+                console.log(`Failed to fetch ${symbol}:`, e.message);
+                return false;
+            }
+        });
+        
+        const results = await Promise.allSettled(fetchPromises);
+        const successCount = results.filter(r => r.status === 'fulfilled' && r.value).length;
+        
+        if (successCount > 0) {
+            console.log(`✅ Loaded ${successCount}/3 metal prices for sidebar`);
+            return prices;
+        }
+        
+        return null;
+        
+    } catch (error) {
+        console.log('❌ API fetch failed:', error.message);
+        return null;
+    }
+}
+
+function updateSidebarPrices(prices, source) {
+    // Update individual price elements
+    const goldElement = document.getElementById('sidebarGoldPrice');
+    const silverElement = document.getElementById('sidebarSilverPrice');
+    const platinumElement = document.getElementById('sidebarPlatinumPrice');
+    const sourceElement = document.getElementById('sidebarPriceSource');
+    const pricesContainer = document.getElementById('sidebarMetalPrices');
+    
+    if (goldElement && prices.gold) {
+        goldElement.textContent = `$${prices.gold.toLocaleString()}`;
+        goldElement.classList.add('price-updated');
+        setTimeout(() => goldElement.classList.remove('price-updated'), 1000);
+    }
+    
+    if (silverElement && prices.silver) {
+        silverElement.textContent = `$${prices.silver.toFixed(2)}`;
+        silverElement.classList.add('price-updated');
+        setTimeout(() => silverElement.classList.remove('price-updated'), 1000);
+    }
+    
+    if (platinumElement && prices.platinum) {
+        platinumElement.textContent = `$${prices.platinum.toLocaleString()}`;
+        platinumElement.classList.add('price-updated');
+        setTimeout(() => platinumElement.classList.remove('price-updated'), 1000);
+    }
+      if (sourceElement) {
+        const timestamp = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        sourceElement.textContent = `${source} ${timestamp}`;
+        
+        // Update CSS class based on source
+        sourceElement.className = 'sidebar-price-source'; // Reset to base class
+        if (source.includes('Live')) {
+            sourceElement.classList.add('sidebar-price-live');
+        } else {
+            sourceElement.classList.add('sidebar-price-estimated');
+        }
+    }
+    
+    // Add visual feedback to the entire container
+    if (pricesContainer) {
+        pricesContainer.classList.add('price-updated');
+        setTimeout(() => pricesContainer.classList.remove('price-updated'), 1000);
+    }
+    
+    console.log(`💰 Sidebar prices updated (${source}):`, prices);
 }
 
 // PERFORMANCE OPTIMIZATION FUNCTIONS
@@ -197,7 +403,6 @@ function loadCachedNavigation() {
 }
 
 function registerServiceWorker() {
-    // Service workers don't work with file:// protocol
     if (window.location.protocol === 'file:') {
         console.log('Service Worker not available with file:// protocol. Use a local server for full functionality.');
         return;
@@ -205,11 +410,9 @@ function registerServiceWorker() {
     
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
-            // Use absolute path for service worker to work from any directory
             const swPath = window.location.pathname.includes('/shop/') || 
                           window.location.pathname.includes('/photos/') || 
-                          window.location.pathname.includes('/contact/') || 
-                          window.location.pathname.includes('/estimates/') ? 
+                          window.location.pathname.includes('/contact/') ? 
                           '../sw.js' : './sw.js';
             
             navigator.serviceWorker.register(swPath)
@@ -225,7 +428,6 @@ function registerServiceWorker() {
 }
 
 function addTransitionEffects() {
-    // Add CSS for smooth transitions
     const style = document.createElement('style');
     style.textContent = `
         .w3-sidebar {
@@ -247,7 +449,6 @@ function addTransitionEffects() {
     `;
     document.head.appendChild(style);
     
-    // Add transition class to main content
     setTimeout(() => {
         const mainContent = document.querySelector('.w3-main, .w3-content, main, .content');
         if (mainContent) {
@@ -257,7 +458,6 @@ function addTransitionEffects() {
 }
 
 function addHoverPreloading() {
-    // Wait for navigation to be fully loaded
     setTimeout(() => {
         const navLinks = document.querySelectorAll('nav a[href], .w3-bar a[href]');
         
@@ -267,7 +467,6 @@ function addHoverPreloading() {
             link.addEventListener('mouseenter', function() {
                 const href = this.getAttribute('href');
                 if (href && !href.startsWith('#') && !href.startsWith('mailto:') && !href.startsWith('tel:')) {
-                    // Preload after 100ms hover to avoid excessive requests
                     preloadTimeout = setTimeout(() => {
                         preloadPage(href);
                     }, 100);
@@ -284,13 +483,10 @@ function addHoverPreloading() {
 }
 
 function preloadPage(url) {
-    // Check if already preloaded
     if (document.querySelector(`link[rel="prefetch"][href="${url}"]`)) {
         return;
     }
-    
-    // Create prefetch link
-    const link = document.createElement('link');
+        const link = document.createElement('link');
     link.rel = 'prefetch';
     link.href = url;
     document.head.appendChild(link);
@@ -299,7 +495,6 @@ function preloadPage(url) {
 }
 
 function cacheNavigationState() {
-    // Store navigation state for faster rendering
     const navState = {
         currentPage: getCurrentPage(),
         iconPath: getIconPath(),
@@ -337,11 +532,32 @@ function generateSidebarHTML() {
           <a href="${getNavLinkForPage('photos', inSubDir)}" class="w3-bar-item w3-button w3-padding-large ${currentPage === 'photos' ? 'nav-active' : 'w3-hover-black'}">
             <i class="fa fa-camera w3-xxlarge"></i>
             <p>PHOTOS</p>
-          </a>
-          <a href="${getNavLinkForPage('contact', inSubDir)}" class="w3-bar-item w3-button w3-padding-large ${currentPage === 'contact' ? 'nav-active' : 'w3-hover-black'}">
+          </a>          <a href="${getNavLinkForPage('contact', inSubDir)}" class="w3-bar-item w3-button w3-padding-large ${currentPage === 'contact' ? 'nav-active' : 'w3-hover-black'}">
             <i class="fa fa-envelope w3-xxlarge"></i>
-            <p>CONTACT</p>
-          </a>        </nav>`;
+            <p>CONTACT</p>          </a>
+          
+          <!-- Metal Prices Section -->
+          <div class="w3-bar-item" style="border-top: 1px solid #444; margin-top: 8px; padding: 8px 4px;">
+            <div id="sidebarMetalPrices" class="sidebar-metal-prices">
+              <div class="sidebar-prices-title">
+                💰 LIVE PRICES
+              </div>
+              <div class="sidebar-price-row">
+                <span>🥇 Gold:</span>
+                <span id="sidebarGoldPrice">$3,365</span>
+              </div>
+              <div class="sidebar-price-row">
+                <span>🥈 Silver:</span>
+                <span id="sidebarSilverPrice">$36.20</span>
+              </div>
+              <div class="sidebar-price-row">
+                <span>💍 Platinum:</span>
+                <span id="sidebarPlatinumPrice">$1,240</span>
+              </div>
+              <div id="sidebarPriceSource" class="sidebar-price-source">Live API 02:35 PM</div>
+            </div>
+          </div>
+        </nav>`;
 }
 
 function generateMobileNavHTML() {

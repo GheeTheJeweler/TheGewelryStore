@@ -1,4 +1,3 @@
-
 body, h1, h2, h3, h4, h5, h6 {
   font-family: "Montserrat", sans-serif;
 }
@@ -50,6 +49,83 @@ img {
   color: #000 !important;
 }
 
+/* PERFORMANCE & TRANSITION OPTIMIZATIONS */
+.w3-sidebar {
+  transition: opacity 0.3s ease-in-out, transform 0.2s ease-in-out;
+  will-change: opacity, transform;
+}
+
+.w3-sidebar.loading {
+  opacity: 0.8;
+}
+
+.w3-sidebar img {
+  transition: opacity 0.2s ease-in-out;
+  will-change: opacity;
+}
+
+.w3-sidebar img:hover {
+  opacity: 0.9;
+}
+
+.w3-bar-item {
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+  will-change: background-color, color;
+}
+
+.page-transition {
+  animation: fadeInSlide 0.4s ease-out;
+}
+
+@keyframes fadeInSlide {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0);
+  }
+}
+
+/* INSTANT LOADING OPTIMIZATION */
+.nav-preload {
+  opacity: 0;
+  transition: opacity 0.1s ease-in;
+}
+
+.nav-preload.loaded {
+  opacity: 1;
+}
+
+/* MOBILE NAVIGATION OPTIMIZATION */
+@media only screen and (max-width: 600px) {
+  .w3-top {
+    transition: transform 0.2s ease-in-out;
+    will-change: transform;
+  }
+  
+  .w3-bar {
+    transition: background-color 0.2s ease-in-out;
+  }
+}
+
+/* PERFORMANCE HINTS */
+* {
+  /* Enable hardware acceleration for smoother animations */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* PRELOAD CONTENT OPTIMIZATION */
+.preload-content {
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+  opacity: 0;
+  pointer-events: none;
+}
+
 
 .nav-active i {
   color: #000 !important;
@@ -66,4 +142,77 @@ img {
 
 p.w3-text-grey {
   color: #ccc !important;
+}
+
+.sidebar-metal-prices {
+  background: rgba(50, 50, 50, 0.9);
+  border: 1px solid #555;
+  border-radius: 6px;
+  padding: 12px 8px;
+  margin: 8px 0;
+  width: 100%;
+  max-width: 110px;
+  font-size: 14px;
+  color: #ddd;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.sidebar-prices-title {
+  color: #ffd700 !important;
+  font-weight: bold;
+  margin-bottom: 10px;
+  font-size: 14px;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-price-row {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 12px;
+  line-height: 1.3;
+  color: #ddd;
+  text-align: center;
+}
+
+.sidebar-price-row span:first-child {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 3px;
+  color: #ccc;
+  font-size: 12px;
+}
+
+.sidebar-price-row span:last-child {
+  display: block;
+  font-weight: bold;
+  color: #ffd700;
+  font-size: 11px;
+}
+
+.sidebar-price-source {
+  font-size: 9px;
+  text-align: center;
+  margin-top: 8px;
+  padding-top: 5px;
+  border-top: 1px solid #444;
+  color: #aaa;
+}
+
+.sidebar-price-live {
+  color: #4CAF50 !important;
+}
+
+.sidebar-price-estimated {
+  color: #ff9800 !important;
+}
+
+@keyframes sidebar-price-update {
+  0% { background: rgba(255, 215, 0, 0.3); }
+  50% { background: rgba(255, 215, 0, 0.1); }
+  100% { background: transparent; }
+}
+
+.price-updated {
+  animation: sidebar-price-update 1s ease-out;
 }
