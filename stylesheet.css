@@ -216,3 +216,19 @@ p.w3-text-grey {
 .price-updated {
   animation: sidebar-price-update 1s ease-out;
 }
+
+/* SOCIAL MEDIA FOOTER STYLING */
+.social-media-footer {
+  margin-top: auto;
+  text-align: center;
+}
+
+.social-media-footer i {
+  margin: 0 8px;
+  cursor: pointer;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.social-media-footer i:hover {
+  opacity: 0.7 !important;
+}

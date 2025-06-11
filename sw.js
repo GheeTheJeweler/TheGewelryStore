@@ -22,9 +22,8 @@ const ASSETS_TO_CACHE = [
     './images/image_8.jpg',
     './images/image_9.jpg',
     './images/image_10.jpg',
-    'https://www.w3schools.com/w3css/4/w3.css',
-    'https://fonts.googleapis.com/css?family=Lato',
-    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css',
+    'https://www.w3schools.com/w3css/4/w3.css',    'https://fonts.googleapis.com/css?family=Lato',
+    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
     'https://instant.page/5.1.0'
 ];
 
