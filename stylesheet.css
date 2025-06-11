@@ -232,3 +232,19 @@ p.w3-text-grey {
 .social-media-footer i:hover {
   opacity: 0.7 !important;
 }
+
+/* Section divider styling */
+hr.w3-opacity {
+  margin: 0 auto !important;
+  border: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.6);
+  display: block;
+}
+
+/* Ensure section title and HR alignment for all contexts */
+.w3-center hr,
+hr[style*="width"] {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
