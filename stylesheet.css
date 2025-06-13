@@ -233,6 +233,16 @@ p.w3-text-grey {
   opacity: 0.7 !important;
 }
 
+.social-media-footer a {
+  text-decoration: none !important;
+  margin: 0 10px;
+  display: inline-block;
+}
+
+.social-media-footer a:hover {
+  text-decoration: none !important;
+}
+
 /* Section divider styling */
 hr.w3-opacity {
   margin: 0 auto !important;
